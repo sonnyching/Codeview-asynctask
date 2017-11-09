@@ -5,6 +5,7 @@ import com.sun.istack.internal.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * it's just guava test
@@ -32,7 +33,6 @@ public class GuavaTest {
         Futures.addCallback(future, new FutureCallback<String>() {
             public void onSuccess(String s) {
                 System.out.println("-----------call back--success--"+s+"-----"+Thread.currentThread().getName());
-                Thread.currentThread().stop();
 
             }
 
@@ -44,8 +44,19 @@ public class GuavaTest {
 
         System.out.println("main thread continue run~"+"-----"+Thread.currentThread().getName());
 
+//        service.shutdown();
+        service.shutdown();
+        try {
+            if(service.awaitTermination(5, TimeUnit.SECONDS)){
+                System.out.println("pool closed~");
+            }else{
+                System.out.println("pool didn't closed~");
+                service.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        Thread.currentThread().stop();
 
 
     }
